@@ -26,8 +26,8 @@ class MainActivity : AppCompatActivity() {
                 for (i in 0 until 5) {
                     userDao.insert(User(i, "fn$i", "ln$i", i))
                     Log.v("INSERT", "insert: $i")
-                    Log.v("GETALL_ISEMPTY", "getAll: ${userDao.getAll()}")
                 }
+                Log.v("GETALL_ISEMPTY", "getAll: ${userDao.getAll()}")
             } else {
                 for (i in 5 until 10) {
                     userDao.insert(User(i, "fn$i", "ln$i", i))
