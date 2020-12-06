@@ -21,29 +21,33 @@ class MainActivity : AppCompatActivity() {
 
         database = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "database-name").allowMainThreadQueries().build()
         val userDao = database.userDao()
-        CoroutineScope(Dispatchers.Main + job).launch {
-            for (i in 0 until 5) {
-                userDao.insert(User(i + 1, "fn$i", "ln$i", i))
-                Log.v("INSERT", "insert: $i")
-            }
-            Log.v("GETALL_ISEMPTY", "getAll: ${userDao.getAll()}")
-        }
-        val usersStr = userDao.getAll().toString()
-        Log.v("GETALL", "getAll: $usersStr")
         val userList: ArrayList<User> = ArrayList()
-        for (user in userDao.getAll()) {
-            userList.add(user)
+        CoroutineScope(Dispatchers.Main + job).launch {
+            if (userDao.getAll().isEmpty()) {
+                for (i in 0 until 5) {
+                    userDao.insert(User(i + 1, "fn$i", "ln$i", i))
+                    Log.v("INSERT", "insert: $i")
+                }
+                Log.v("GETALL_ISEMPTY", "getAll: ${userDao.getAll()}")
+            }
+            for (user in userDao.getAll()) {
+                userList.add(user)
+            }
         }
+        Log.v("GETALL", "getAll: ${userDao.getAll()}")
 
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        var adapter = CustomAdapter(userList)
+        val adapter = CustomAdapter(userList)
         recyclerView.adapter = adapter
 
-        val fab = findViewById<FloatingActionButton>(R.id.fab_add)
-        fab.setOnClickListener {
-            val index = userDao.getAll().last().id
+        val fabAdd = findViewById<FloatingActionButton>(R.id.fab_add)
+        fabAdd.setOnClickListener {
             CoroutineScope(Dispatchers.Main + job).launch {
+                val tmp = userDao.getAll()
+                val index: Int =
+                    if (tmp.isEmpty()) 0
+                    else tmp.last().id
                 val user = User(index + 1, "fn$index", "ln$index", index)
                 userDao.insert(user)
                 userList.add(user)
@@ -51,8 +55,13 @@ class MainActivity : AppCompatActivity() {
                 adapter.notifyDataSetChanged()
             }
         }
-
-//        userDao.deleteAll()
+        val fabDeleteAll = findViewById<FloatingActionButton>(R.id.fab_delete_all)
+        fabDeleteAll.setOnClickListener {
+            userDao.deleteAll()
+            userList.clear()
+            Log.v("DELETEALL", "userDao.getAll: " + userDao.getAll() + ", userList: " + userList)
+            adapter.notifyDataSetChanged()
+        }
     }
 
     override fun onDestroy() {
