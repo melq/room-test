@@ -2,7 +2,9 @@ package com.melq.roomtest
 
 import androidx.room.*
 
-class Room {
+@Database(entities = [User::class], version = 1)
+abstract class AppDatabase: RoomDatabase() {
+    abstract fun userDao(): UserDao
 }
 
 @Entity(tableName = "users")
@@ -15,7 +17,7 @@ data class User (
 
 @Dao
 interface UserDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(user : User)
 
     @Update
@@ -28,7 +30,7 @@ interface UserDao {
     fun deleteAll()
 
     @Query("select * from users")
-    fun getAll()
+    fun getAll(): List<User>
 
     @Query("select * from users where id = :id")
     fun getUser(id: Int): User
