@@ -20,24 +20,27 @@ class MainActivity : AppCompatActivity() {
 
         database = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "database-name").allowMainThreadQueries().build()
         val userDao = database.userDao()
-        CoroutineScope(Dispatchers.Main + job).launch {
+        var usersStr = userDao.getAll().toString()
+        Log.v("GETALL", "getAll: $usersStr")
+//        CoroutineScope(Dispatchers.Main + job).launch {
             val userList = userDao.getAll()
             if (userList.isEmpty()) {
                 for (i in 0 until 5) {
-                    userDao.insert(User(i, "fn$i", "ln$i", i))
+                    userDao.insert(User(i + 1, "fn$i", "ln$i", i))
                     Log.v("INSERT", "insert: $i")
                 }
                 Log.v("GETALL_ISEMPTY", "getAll: ${userDao.getAll()}")
             } else {
                 for (i in 5 until 10) {
-                    userDao.insert(User(i, "fn$i", "ln$i", i))
+                    userDao.insert(User(i + 1, "fn$i", "ln$i", i))
                     Log.v("INSERT", "insert: $i")
                 }
             }
-        }
-        val usersStr = userDao.getAll().toString()
-        Log.v("GETALL", "getAll: $usersStr")
+//        }
+        usersStr = userDao.getAll().toString()
         textView.text = usersStr
+        Log.v("GETALL", "getAll: $usersStr")
+        userDao.deleteAll()
     }
 
     override fun onDestroy() {
