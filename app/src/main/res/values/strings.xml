@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">RoomTest</string>
+    <string name="addUser">ADD_USER</string>
 </resources>
