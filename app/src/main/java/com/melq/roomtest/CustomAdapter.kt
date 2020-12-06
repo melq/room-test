@@ -23,10 +23,14 @@ class CustomAdapter(private val userList: ArrayList<User>): RecyclerView.Adapter
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val userData = userList[position]
 
-        holder.id.text = userData.id.toString()
-        holder.fn.text = userData.firstName
-        holder.ln.text = userData.lastName
-        holder.age.text = userData.age.toString()
+        val id = "id: " + userData.id.toString()
+        val fn = "fn: " + userData.firstName
+        val ln = "ln: " + userData.lastName
+        val age = "age: " + userData.age.toString()
+        holder.id.text = id
+        holder.fn.text = fn
+        holder.ln.text = ln
+        holder.age.text = age
     }
 
     override fun getItemCount() = userList.size
